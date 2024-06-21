@@ -1,55 +1,51 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../../action";
-import { useNavigate } from "react-router-dom";
+import ProductCard from "../../components/Product Card/ProductCard";
+import Loading from "../../components/Loading/Loading";
+import ErrorMessage from "../../components/Error/ErrorMessage";
+import { MotionVariants } from "../../utils/util";
+import { motion } from "framer-motion";
 
 const Products = () => {
   const { proLoading, proData, proError } = useSelector(
     (state) => state.products
   );
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   useEffect(() => {
     dispatch(getProducts());
   }, []);
 
   return (
-    <div className="mt-10">
+    <div
+      className="pt-[5%] px-5 mb-8"
+    >
       {proLoading ? (
-        <div class="lds-roller">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
+        <div className="absolute -translate-x-1/2 left-1/2 -translate-y-1/2 top-1/2">
+          <Loading />
         </div>
       ) : proError ? (
-        <p>{proError}</p>
+        <div className="absolute -translate-x-1/2 left-1/2 -translate-y-1/2 top-1/2">
+          <ErrorMessage />
+        </div>
       ) : (
-        <div className="w-5/6 mx-auto grid grid-cols-5 gap-4 sm:max-lg:grid-cols-3">
-          {proData.map((item) => {
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 lg:gap-8 gap-4 justify-center items-center">
+          {proData.map((item, index) => {
             return (
-              <div className="p-1" key={item.id}>
-                <img
-                  src={item.image}
-                  className="w-[200px] mx-auto border p-9 h-60"
-                />
-                <div className="text-left p-5">
-                  <p className="text-gray-400 capitalize">{item.category}</p>
-                  <span className="font-bold text-sm">
-                    <p className="text-green-800">${item.price}</p>
-                    <h2
-                      onClick={() => navigate(`/products/${item.id}`)}
-                      className="hover:text-blue-800 hover:cursor-pointer"
-                    >
-                      {item.title}
-                    </h2>
-                  </span>
-                </div>
-              </div>
+              <motion.div
+                variants={MotionVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{
+                  delay: index * 0.25,
+                  ease: "easeInOut",
+                  duration: 0.5,
+                }}
+                viewport={{ amount: 0 }}
+                key={item.id}
+              >
+                <ProductCard item={item} />
+              </motion.div>
             );
           })}
         </div>
